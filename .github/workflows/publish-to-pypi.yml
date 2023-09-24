@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/ezmse  # Replace <package-name> with your PyPI project name
+      url: https://pypi.org/p/ezmse
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
@@ -48,7 +48,6 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.PYPI_API_TOKEN }}
-        repository-url: https://pypi.org/ezmse/
 
   publish-to-testpypi:
     name: Publish Python distribution to TestPyPI
@@ -74,4 +73,4 @@ jobs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-        repository-url: https://test.pypi.org/ezmse/
+        repository-url: https://test.pypi.org/legacy
