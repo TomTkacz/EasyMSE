@@ -14,5 +14,5 @@ setup(
             'ezmse-cli = ezmse.main:main',
         ]
     },
-    long_description="long package description"
+    long_description="package description, but long"
 )
