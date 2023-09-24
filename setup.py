@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='ezmse',
-    version='0.0.2',
+    version='0.0.3',
     description='some package description',
     author='Tom Tkacz',
     author_email='thomasatkacz@gmail.com',
@@ -14,5 +14,5 @@ setup(
             'ezmse-cli = ezmse.main:main',
         ]
     },
-    long_description="package description, but longg"
+    long_description="package description, but long"
 )
