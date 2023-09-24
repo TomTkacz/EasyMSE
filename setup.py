@@ -13,5 +13,6 @@ setup(
         'console_scripts': [
             'ezmse-cli = ezmse.main:main',
         ]
-    }
+    },
+    long_description="long package description"
 )
