@@ -3,7 +3,7 @@ from setuptools import find_packages
 
 setup(
     name='ezmse',
-    version='0.0.3',
+    version='0.0.4',
     description='some package description',
     author='Tom Tkacz',
     author_email='thomasatkacz@gmail.com',
