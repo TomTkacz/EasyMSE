@@ -10,17 +10,24 @@ rootDirectory = Path(__file__).parent.resolve()
 config = ConfigParser()
 config.read(rootDirectory / 'include' / 'config.ini')
 
+def setMSEFolder(path):
+    if type(path) is str:
+        path = Path(path)
+    if isdir(path/'data') and isdir(path/'resource') and isfile(path/'magicseteditor.com') and isfile(path/'magicseteditor.exe'):
+        config['file-locations']['mse-folder'] = str(path)
+        config['file-locations']['mse-exe'] = str(path / 'magicseteditor.exe')
+        config['file-locations']['mse-com'] = str(path / 'magicseteditor.com')
+        with open(rootDirectory / 'include' / 'config.ini', 'w') as f:
+            config.write(f)
+        config.read(rootDirectory / 'include' / 'config.ini')
+    else:
+        print("folder must contain the files 'magicseteditor.exe' 'magicseteditor.com' and the directories 'data' 'resource'")
+
 if isfile(rootDirectory / 'include' / 'set.mse-set'):
-    config['file-locations']['mse-set'] = str(rootDirectory)+'/include/set.mse-set'
+    config['file-locations']['mse-set'] = str(rootDirectory / 'include' / 'set.mse-set')
     
 if config['file-locations']['mse-folder'] == '':
-    if isdir('data') and isdir('resource') and isfile('magicseteditor.com') and isfile('magicseteditor.exe'):
-        config['file-locations']['mse-folder'] = getcwd()
-        config['file-locations']['mse-exe'] = getcwd()+'/magicseteditor.exe'
-        config['file-locations']['mse-com'] = getcwd()+'/magicseteditor.com'
-    with open(rootDirectory / 'include' / 'config.ini', 'w') as f:
-        config.write(f)
-    config.read(rootDirectory / 'include' / 'config.ini')
+    setMSEFolder(Path(getcwd()))
     
 class Card:
     def __init__(self,name="[name]",rulesText="[rulesText]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]"):
