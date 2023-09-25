@@ -36,7 +36,7 @@ class Card:
         self.illustrator = illustrator
         
     def export(self):
-        cardWriteCommand = ''':load set.mse-set\nmy_card := new_card([name: "name"])\nwrite_image_file(my_card, file: "card.jpg")'''
+        cardWriteCommand = ''':load set.mse-set\nmy_card := new_card([name: "name", super_type: "Legendary", casting_cost: "3G", pt: "3/4", card_color: "blue"])\nwrite_image_file(my_card, file: "card.jpg")'''
         copy( rootDirectory / 'include' / 'set.mse-set', getcwd() )
         with open("ezmse-in.txt","w") as f:
             f.writelines(iter(cardWriteCommand))
