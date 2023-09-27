@@ -2,19 +2,27 @@ from pathlib import Path
 import zipfile
 
 class PackageHandler():
-    def __init__(self):
-        self.path = Path("C:/Users/antom/OneDrive/Desktop/ezmse/ezmse/include/set.mse-set")
-        # self.path = Path(packagePath) if type(packagePath) is str else packagePath
+    def __init__(self,packagePath):
+        self.path = Path(packagePath) if type(packagePath) is str else packagePath
         
     def read(self,fileName):
         package = zipfile.ZipFile(str(self.path),'r')
         packageData = package.read(fileName)
         result = {}
         keyStack = []
+        lastIndent = -1
         
-        for line in bytes.decode(packageData,encoding="utf-8-sig").split('\n'):
+        lines = bytes.decode(packageData,encoding="utf-8-sig").rstrip().split('\n')
+        
+        for line in lines:
             
+            if line == '\n':
+                continue
+                        
             indent = line.count('\t')
+            if indent == lastIndent:
+                keyStack.pop()
+                
             if indent == 0:
                 currentDict = result
                 keyStack = []
@@ -34,7 +42,7 @@ class PackageHandler():
 
             keyValueList = lineStripped.split(': ', 1)
             if len(keyValueList) == 1:
-                key = keyValueList[0]
+                key = keyValueList[0][:-1]
                 value = None
             elif len(keyValueList) == 2:
                 key,value = tuple(keyValueList)
@@ -45,5 +53,7 @@ class PackageHandler():
                 currentDict.setdefault(key,{})
             else:
                 currentDict.setdefault(key,value)
+
+            lastIndent = indent
                         
         return result
