@@ -1,7 +1,4 @@
-magicseteditor.*
-resource
-Magic - fonts
-data
 build
 __pycache__
 *.egg-info
+test

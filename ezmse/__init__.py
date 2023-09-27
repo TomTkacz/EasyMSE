@@ -31,7 +31,7 @@ if config['file-locations']['mse-folder'] == '':
     
 class Card:
     
-    __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator']
+    __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
     
     def __formatFields(self):
         self.__formattedFields['name'] = f"\"{self.name}\""
@@ -43,9 +43,10 @@ class Card:
         self.__formattedFields['card_color'] = f"\"{self.color}\""
         self.__formattedFields['rarity'] = f"\"{self.rarity}\""
         self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
-
+        self.__formattedFields['set_code'] = f"\"{self.setCode}\""
         
-    def __init__(self,name="[name]",text="[text]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]"):
+    def __init__(self,name="[name]",text="[text]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",setCode="[setCode]"):
+        
         self.name = name
         self.text = text
         self.type = type
@@ -56,7 +57,9 @@ class Card:
         self.rarity = rarity
         self.color = color
         self.illustrator = illustrator
+        self.setCode = setCode
         self.__formattedFields = {}
+        
         for fieldName in Card.__fieldNames:
             self.__formattedFields.setdefault(fieldName)
         
