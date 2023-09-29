@@ -31,6 +31,5 @@ try:
 
     with open(pathToConfig, 'w') as f:
         config.write(f)
-    config.read(pathToConfig)
 except:
     pass
