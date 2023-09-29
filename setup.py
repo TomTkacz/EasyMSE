@@ -19,14 +19,18 @@ setup(
     }
 )
 
-pathToConfig = 'ezmse/include/config.ini'
-config = ConfigParser()
-config.read(pathToConfig)
+# easy way to ensure config.ini is cleared before deployment (for development)
+try:
+    pathToConfig = 'ezmse/include/config.ini'
+    config = ConfigParser()
+    config.read(pathToConfig)
 
-for section in config.sections():
-    for option in config.options(section):
-        config[section][option] = ''
+    for section in config.sections():
+        for option in config.options(section):
+            config[section][option] = ''
 
-with open(pathToConfig, 'w') as f:
-    config.write(f)
-config.read(pathToConfig)
+    with open(pathToConfig, 'w') as f:
+        config.write(f)
+    config.read(pathToConfig)
+except:
+    pass
