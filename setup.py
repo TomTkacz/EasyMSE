@@ -18,5 +18,5 @@ setup(
     }
 )
 
-import ezmse
-ezmse.config.wipe()
+from ezmse.config import wipe
+wipe()
