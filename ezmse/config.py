@@ -11,6 +11,17 @@ def update():
     with open(rootDirectory / 'include' / 'config.ini', 'w') as f:
         config.write(f)
     config.read(rootDirectory / 'include' / 'config.ini')
+    
+def wipe(section=None,option=None):
+    if not section:
+        for section in config.sections():
+            for option in config.options(section):
+                config[section][option] = ''
+    elif not option:
+        for option in config.options(section):
+                config[section][option] = ''
+    config[section][option] = ''
+    update()
 
 def setMSEFolder(path):
     if type(path) is str:
