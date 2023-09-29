@@ -1,5 +1,6 @@
 from setuptools import setup
 from setuptools import find_packages
+from configparser import ConfigParser
 
 setup(
     name='ezmse',
@@ -18,5 +19,14 @@ setup(
     }
 )
 
-from ezmse.config import wipe
-wipe()
+pathToConfig = 'ezmse/include/config.ini'
+config = ConfigParser()
+config.read(pathToConfig)
+
+for section in config.sections():
+    for option in config.options(section):
+        config[section][option] = ''
+
+with open(pathToConfig, 'w') as f:
+    config.write(f)
+config.read(pathToConfig)
