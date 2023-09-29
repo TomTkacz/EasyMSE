@@ -5,7 +5,10 @@ class PackageHandler():
     def __init__(self,packagePath):
         self.path = Path(packagePath) if type(packagePath) is str else packagePath
         
-    def read(self,fileName):
+    # TODO: convert dictionaries with duplicate keys to lists... somehow
+    
+    def parse(self,fileName):
+        
         package = zipfile.ZipFile(str(self.path),'r')
         packageData = package.read(fileName)
         result = {}
@@ -13,6 +16,9 @@ class PackageHandler():
         lastIndent = -1
         plainText = False
         scriptIndent = -1
+        key = None
+        value = None
+        currentDict = None
         
         lines = bytes.decode(packageData,encoding="utf-8-sig").rstrip().split('\n')
         
@@ -25,13 +31,20 @@ class PackageHandler():
             if lineStripped.startswith('#'):
                 continue
                         
-            indent = line.count('\t')
-            if indent == lastIndent and len(keyStack)>0 and not plainText:
-                keyStack.pop()
+            indent = len(line)-len(line.lstrip())
             
             if indent <= scriptIndent:
                 plainText = False
                 scriptIndent = -1
+            
+            if currentDict and not plainText:
+                if indent < lastIndent:
+                    for _ in range(lastIndent-indent):
+                        if not len(keyStack)>0:
+                            break
+                        keyStack.pop()
+                elif type(currentDict.get(key)) is dict and indent == lastIndent and len(keyStack)>0:
+                    keyStack.pop()
             
             if indent == 0:
                 currentDict = result
@@ -47,17 +60,18 @@ class PackageHandler():
                 currentDict = d
 
             if not plainText:
-                keyValueList = lineStripped.split(': ', 1)
+                keyValueList = lineStripped.split(':', 1)
                 if len(keyValueList) == 1:
-                    key = keyValueList[0][:-1]
+                    key = keyValueList[0][:-1].strip()
                     value = None
                 elif len(keyValueList) == 2:
                     key,value = tuple(keyValueList)
-                
-                keyStack.append(key)
+                    key = key.strip()
+                    value = value.strip()
                         
                 if not value:
                     currentDict.setdefault(key,{})
+                    keyStack.append(key)
                 else:
                     currentDict.setdefault(key,value)
             else:
@@ -73,3 +87,6 @@ class PackageHandler():
             lastIndent = indent
                         
         return result
+    
+ph = PackageHandler("C:/Users/antom/OneDrive/Desktop/ezmse/test/test.zip")
+print(ph.parse("style"))
