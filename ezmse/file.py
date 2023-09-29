@@ -1,16 +1,20 @@
 from pathlib import Path
+from os import getcwd
 import zipfile
 
-class PackageHandler():
-    def __init__(self,packagePath):
-        self.path = Path(packagePath) if type(packagePath) is str else packagePath
-        
-    # TODO: convert dictionaries with duplicate keys to lists... somehow
+class SetHandler():
     
-    def parse(self,fileName):
+    def __init__(self,setPath):
+        self.path = Path(setPath) if type(setPath) is str else setPath
+            
+    def getStylePath(self):
+        archive = zipfile.ZipFile(str(self.path),'r')
+        setData = archive.read("set")
+        return Path(getcwd()) / 'data' / f'magic-{parse(setData)["stylesheet"]}.mse-style'
+    
+# TODO: convert dictionaries with duplicate keys to lists... somehow
+def parse(text):
         
-        package = zipfile.ZipFile(str(self.path),'r')
-        packageData = package.read(fileName)
         result = {}
         keyStack = []
         lastIndent = -1
@@ -20,7 +24,10 @@ class PackageHandler():
         value = None
         currentDict = None
         
-        lines = bytes.decode(packageData,encoding="utf-8-sig").rstrip().split('\n')
+        try:
+            lines = bytes.decode(text,encoding="utf-8-sig").rstrip().split('\n')
+        except:
+            lines = text.splitlines(True)
         
         for line in lines:
             
@@ -87,6 +94,3 @@ class PackageHandler():
             lastIndent = indent
                         
         return result
-    
-ph = PackageHandler("C:/Users/antom/OneDrive/Desktop/ezmse/test/test.zip")
-print(ph.parse("style"))
