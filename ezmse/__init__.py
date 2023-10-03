@@ -1,8 +1,10 @@
-from . import file,config
+from . import config
 
-from os import remove,getcwd
+from os import remove,rename,mkdir,chdir,remove
+from os.path import isfile,isdir,basename
+from pathlib import Path
 from subprocess import Popen
-from shutil import copy
+from shutil import copy,rmtree
 
 cfg = config.config
 
@@ -10,7 +12,7 @@ class Card:
     
     __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
         
-    def __init__(self,name="[name]",text="[text]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",setCode="[setCode]"):
+    def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",setCode="[setCode]"):
         
         self.name = name
         self.text = text
@@ -23,6 +25,7 @@ class Card:
         self.color = color
         self.illustrator = illustrator
         self.setCode = setCode
+        self.image = image
         
         self.__formattedFields = {}
         
@@ -40,7 +43,7 @@ class Card:
         self.__formattedFields['rarity'] = f"\"{self.rarity}\""
         self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
         self.__formattedFields['set_code'] = f"\"{self.setCode}\""
-        
+
     def export(self,fileName="card.jpg"):
         
         self.__formatFields()
@@ -48,19 +51,49 @@ class Card:
         paramString = "[" + ", ".join(formatted_items) + "]"
         cardWriteCommand = f":load set.mse-set\nmy_card := new_card({paramString})\nwrite_image_file(my_card, file: \"{fileName}\")"
         
-        copy( config.rootDirectory / 'include' / 'set.mse-set', getcwd() )
-        
-        with open("ezmse-in.txt","w") as f:
-            f.writelines(iter(cardWriteCommand))
+        mseFolderPath = cfg['file-locations']['mse-folder']
+        if isdir(mseFolderPath):
             
-        with open("ezmse-in.txt","r") as f:
-            with Popen(["magicseteditor.com","--cli"],stdin=f):
-                pass
-        
-        sh = file.SetHandler(cfg["file-locations"]["mse-set"])
-        with open(sh.getStylePath() / 'style','r',encoding="utf-8-sig") as f:
-            imageInfo = file.parse(f.read())['card style']['image']
-            # handle image info...
+            mseFolderPath = Path(mseFolderPath)
+            tempDirectory = Path(mseFolderPath / 'temp')
+            # TODO: add support for .png images
+            validImage = self.image is not None and type(self.image) is str and isfile(self.image) and self.image.endswith(".jpg")
+            defaultImageScriptReplaced = False
+            imagePath = self.image
+            imageName = basename(self.image)
+            imageExtension = imageName[-3:]
+
+            mkdir(tempDirectory)
+            copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
+            
+            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and validImage:
+                if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageExtension}'):
+                    remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageExtension}')
+                copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
+                chdir(mseFolderPath / 'data' / 'magic-default-image.mse-include')
+                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageExtension}')
+                copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
+                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
+                copy(config.rootDirectory / 'include' / 'custom-image-script', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'custom-image-script', 'scripts')
+                chdir(mseFolderPath)
+                defaultImageScriptReplaced = True
                 
-        remove("ezmse-in.txt")
-        remove("set.mse-set")
+        else:
+            mseFolderPath = None
+            
+        if mseFolderPath:
+            with open(tempDirectory / 'ezmse-in.txt','w') as f:
+                f.writelines(iter(cardWriteCommand))
+
+            with open(tempDirectory / 'ezmse-in.txt','r') as f:
+                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f):
+                    pass
+            if defaultImageScriptReplaced:
+                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
+                copy(tempDirectory / 'scripts', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+                
+            rmtree(tempDirectory)
+            remove(mseFolderPath / 'set.mse-set')
+        else:
+            print("no path found to Magic Set Editor :(")
