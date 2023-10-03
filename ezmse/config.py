@@ -34,9 +34,11 @@ def setMSEFolder(path):
     else:
         print("folder must contain the files 'magicseteditor.exe' 'magicseteditor.com' and the directories 'data' 'resource'")
 
+# TODO: should only set mse-folder to cwd if cwd contains mse.exe and mse.com
 if config['file-locations']['mse-folder'] == '':
     setMSEFolder(Path(getcwd()))
      
+# TODO: allow for user to set custom set location, defaults to include/set.mse-set
 if isfile(rootDirectory / 'include' / 'set.mse-set'):
     config['file-locations']['mse-set'] = str(rootDirectory / 'include' / 'set.mse-set')
     update()
