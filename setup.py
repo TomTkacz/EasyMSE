@@ -11,9 +11,6 @@ setup(
     url='https://github.com/TomTkacz/EasyMSE',
     packages=find_packages(),
     long_description="package description, but long",
-    install_requires=[
-        'pillow>=10.0.0'
-    ],
     package_data={
         'ezmse': ['include/*'],
     }

@@ -3,7 +3,6 @@ from . import file,config
 from os import remove,getcwd
 from subprocess import Popen
 from shutil import copy
-import PIL
 
 cfg = config.config
 
