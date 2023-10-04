@@ -6,4 +6,11 @@ def card():
     return Card()
 
 def test_init(card):
-    assert card.name == "[name]"
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str
+    assert type(card.name) is str

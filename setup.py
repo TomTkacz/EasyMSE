@@ -13,6 +13,11 @@ setup(
     long_description="package description, but long",
     package_data={
         'ezmse': ['include/*'],
+    },
+    extras_require={
+        'dev': [
+            'pytest>=7.4'
+        ]
     }
 )
 
