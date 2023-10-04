@@ -2,3 +2,5 @@ build
 __pycache__
 *.egg-info
 test 
+.vscode
+.pytest_cache
