@@ -43,35 +43,45 @@ class Card:
         self.__formattedFields['rarity'] = f"\"{self.rarity}\""
         self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
         self.__formattedFields['set_code'] = f"\"{self.setCode}\""
+        
+    def __generateNewCardParamsString(self):
+        formattedParams = [f"{fieldName}: {value}" for fieldName, value in self.__formattedFields.items()]
+        return "[" + ", ".join(formattedParams) + "]"
+    
+    def __checkImageValidity(self):
+        # TODO: add support for .png images
+        return self.image is not None and type(self.image) is str and isfile(self.image) and self.image.endswith(".jpg")
+    
+    def __getImageInfo(self):
+        imagePath = Path(self.image)
+        imageName = basename(self.image)
+        imageFileExtension = imageName[-3:]
+        return (imagePath,imageName,imageFileExtension)
 
     def export(self,fileName="card.jpg"):
         
         self.__formatFields()
-        formatted_items = [f"{key}: {value}" for key, value in self.__formattedFields.items()]
-        paramString = "[" + ", ".join(formatted_items) + "]"
-        cardWriteCommand = f":load set.mse-set\nmy_card := new_card({paramString})\nwrite_image_file(my_card, file: \"{fileName}\")"
-        
+        paramsString = self.__generateNewCardParamsString()
+        cardWriteCommand = f":load set.mse-set\nmy_card := new_card({paramsString})\nwrite_image_file(my_card, file: \"{fileName}\")"
         mseFolderPath = cfg['file-locations']['mse-folder']
+        
         if isdir(mseFolderPath):
             
             mseFolderPath = Path(mseFolderPath)
             tempDirectory = Path(mseFolderPath / 'temp')
-            # TODO: add support for .png images
-            validImage = self.image is not None and type(self.image) is str and isfile(self.image) and self.image.endswith(".jpg")
+            isValidImage = self.__checkImageValidity()
             defaultImageScriptReplaced = False
-            imagePath = self.image
-            imageName = basename(self.image)
-            imageExtension = imageName[-3:]
+            imagePath,imageName,imageFileExtension = self.__getImageInfo()
 
             mkdir(tempDirectory)
             copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
             
-            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and validImage:
-                if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageExtension}'):
-                    remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageExtension}')
+            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
+                if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}'):
+                    remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}')
                 copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
                 chdir(mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageExtension}')
+                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageFileExtension}')
                 copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
                 remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
                 copy(config.rootDirectory / 'include' / 'custom-image-script', mseFolderPath / 'data' / 'magic-default-image.mse-include')

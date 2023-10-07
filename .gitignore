@@ -4,3 +4,4 @@ __pycache__
 test 
 .vscode
 .pytest_cache
+tests/src/*
