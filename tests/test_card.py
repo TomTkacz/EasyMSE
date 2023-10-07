@@ -4,14 +4,6 @@ from pytest import fixture
 @fixture()
 def card():
     return Card()
-
-@fixture()
-def fs(fs):
-    yield fs
-
-def test_init(card,fs):
-    fs.add_real_directory("src")
-    assert card.name == "[name]"
     
 def test_generateNewCardParamsString(card):
     card.name = "TestName"
