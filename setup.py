@@ -14,7 +14,7 @@ setup(
     package_data={
         'ezmse': ['include/*'],
     },
-    requires=[
+    install_requires=[
         'pyfakefs>=5.2'
     ],
     extras_require={
