@@ -16,7 +16,8 @@ setup(
     },
     extras_require={
         'dev': [
-            'pytest>=7.4'
+            'pytest>=7.4',
+            'pyfakefs>=5.2'
         ]
     }
 )
