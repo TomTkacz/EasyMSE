@@ -5,6 +5,10 @@ from pytest import fixture
 def card():
     return Card()
 
+@fixture()
+def fs(fs):
+    yield fs
+
 def test_init(card,fs):
     fs.add_real_directory("src")
     assert card.name == "[name]"
