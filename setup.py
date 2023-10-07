@@ -14,10 +14,12 @@ setup(
     package_data={
         'ezmse': ['include/*'],
     },
+    requires={
+        'pyfakefs>=5.2'
+    },
     extras_require={
         'dev': [
             'pytest>=7.4',
-            'pyfakefs>=5.2'
         ]
     }
 )
