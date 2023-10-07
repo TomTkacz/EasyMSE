@@ -1,5 +1,11 @@
 from ezmse import Card
 from pytest import fixture
+from pyfakefs.fake_filesystem_unittest import Patcher
+
+@fixture
+def fs():
+    with Patcher() as patcher:
+        yield patcher.fs
 
 @fixture()
 def card():
