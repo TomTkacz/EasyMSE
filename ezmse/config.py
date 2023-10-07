@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from os.path import isfile,isdir
-from os import getcwd
+from os import getcwd,listdir
 from pathlib import Path
 
 rootDirectory = Path(__file__).parent.resolve()
@@ -22,6 +22,19 @@ def wipe(section=None,option=None):
                 config[section][option] = ''
     config[section][option] = ''
     update()
+    
+def setSetLocation(path):
+    if type(path) is str:
+        path = Path(path)
+    if isdir(path):
+        for file in listdir(path):
+            if file.endswith(".mse-set"):
+                path = path / file
+                break
+    elif not (isfile(path) and str(path).endswith(".mse-set")):
+        return
+    config['file-locations']['mse-set'] = str(path)
+    update()
 
 def setMSEFolder(path):
     if type(path) is str:
@@ -34,11 +47,9 @@ def setMSEFolder(path):
     else:
         print("folder must contain the files 'magicseteditor.exe' 'magicseteditor.com' and the directories 'data' 'resource'")
 
-# TODO: should only set mse-folder to cwd if cwd contains mse.exe and mse.com
 if config['file-locations']['mse-folder'] == '':
     setMSEFolder(Path(getcwd()))
      
-# TODO: allow for user to set custom set location, defaults to include/set.mse-set
-if isfile(rootDirectory / 'include' / 'set.mse-set'):
+if config['file-locations']['mse-set'] == '' and isfile(rootDirectory / 'include' / 'set.mse-set'):
     config['file-locations']['mse-set'] = str(rootDirectory / 'include' / 'set.mse-set')
     update()
