@@ -39,3 +39,8 @@ myCard.export("card.png")
 Open a terminal and clone the repository with `git clone "https://github.com/TomTkacz/EasyMSE.git"`
 
 Navigate to the root folder and enter `pip install -e .[dev]`
+
+Features that need added:
+
+* A more genericized Card class that can generate other types of cards (Planeswalker, Saga, etc.)
+* More unit tests! (I'm fairly new to them)
