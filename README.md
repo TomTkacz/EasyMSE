@@ -6,6 +6,8 @@ EasyMSE is a Python package for creating Magic: The Gathering cards from the com
 
 With Python and PIP installed, open a terminal and enter `pip install ezmse`
 
+You must have Magic Set Editor 2 installed. Your working directory must contain the .exe and .com versions of MSE as well as its data and resource folder. You must also have the [Magic - M15 fonts](https://github.com/MagicSetEditorPacks/Font-Pack) installed on your computer in order for the cards to render properly.
+
 # Usage
 
 ## Generating a Card
