@@ -49,8 +49,7 @@ class Card:
         return "[" + ", ".join(formattedParams) + "]"
     
     def __checkImageValidity(self):
-        # TODO: add support for .png images
-        return self.image is not None and type(self.image) is str and isfile(self.image) and self.image.endswith(".jpg")
+        return self.image is not None and type(self.image) is str and isfile(self.image) and ( self.image.endswith(".jpg") or self.image.endswith(".png") )
     
     def __getImageInfo(self):
         imagePath = Path(self.image)
@@ -84,8 +83,8 @@ class Card:
                 rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageFileExtension}')
                 copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
                 remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-                copy(config.rootDirectory / 'include' / 'custom-image-script', mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'custom-image-script', 'scripts')
+                copy(config.rootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom-image-script-{imageFileExtension}', 'scripts')
                 chdir(mseFolderPath)
                 defaultImageScriptReplaced = True
                 
