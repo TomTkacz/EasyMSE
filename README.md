@@ -34,4 +34,5 @@ myCard.export("card.png")
 
 # Developing EasyMSE
 
-To install with the necessary development dependencies, open a terminal and enter `pip install ezmse -e .[dev]`
+Clone the repository with `$ git clone "https://github.com/TomTkacz/EasyMSE.git"`
+Navigate to the root folder, open a terminal, and enter `$ pip install -e .[dev]`
