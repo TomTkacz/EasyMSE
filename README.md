@@ -8,7 +8,7 @@ With Python and PIP installed, open a terminal and enter `pip install ezmse`
 
 # Usage
 
-##### Generating a Card
+## Generating a Card
 
 ```python
 from ezmse import Card
