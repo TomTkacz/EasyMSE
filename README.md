@@ -34,5 +34,6 @@ myCard.export("card.png")
 
 # Developing EasyMSE
 
-Clone the repository with `$ git clone "https://github.com/TomTkacz/EasyMSE.git"`.
-Navigate to the root folder, open a terminal, and enter `$ pip install -e .[dev]`.
+Clone the repository with `$ git clone "https://github.com/TomTkacz/EasyMSE.git"`
+
+Navigate to the root folder, open a terminal, and enter `$ pip install -e .[dev]`
