@@ -5,7 +5,7 @@ from configparser import ConfigParser
 setup(
     name='ezmse',
     version='0.1.0',
-    description='some package description',
+    description='some package description!',
     author='Tom Tkacz',
     author_email='thomasatkacz@gmail.com',
     url='https://github.com/TomTkacz/EasyMSE',
