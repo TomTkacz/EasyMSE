@@ -1,6 +1,6 @@
 # EasyMSE
 
-EasyMSE is a Python package for creating Magic: The Gathering cards from the command line. It interfaces with an installation of Magic Set Editor 2 and its built in CLI to make generating custom cards easier.
+EasyMSE is a Python package for creating Magic: The Gathering cards from code or the command line. It interfaces with an installation of Magic Set Editor 2 and its built in CLI to make generating custom cards easier.
 
 # Installation
 
