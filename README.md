@@ -44,3 +44,4 @@ Features that need added:
 
 * A more genericized Card class that can generate other types of cards (Planeswalker, Saga, etc.)
 * More unit tests! (I'm fairly new to them)
+* A way to make pyfakefs a development-only dependency (only including it in the dev section of setup.py makes the unit tests error out)
