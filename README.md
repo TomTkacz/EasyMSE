@@ -31,8 +31,9 @@ myCard.image = "cheese.jpg"
 
 myCard.export("card.png")
 ```
-
-![1696893501127](image/README/1696893501127.png)
+<h1 align="center">
+<img src="image/README/1696893501127.png">
+</h1>
 
 # Developing EasyMSE
 
