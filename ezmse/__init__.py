@@ -40,7 +40,7 @@ class Card:
         self.__formattedFields['casting_cost'] = f"\"{self.castingCost}\""
         self.__formattedFields['pt'] = f"\"{self.power}/{self.toughness}\""
         self.__formattedFields['card_color'] = f"\"{self.color}\""
-        self.__formattedFields['rarity'] = f"\"{self.rarity}\""
+        self.__formattedFields['rarity'] = f"\"{self.rarity.lower()}\""
         self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
         self.__formattedFields['set_code'] = f"\"{self.setCode}\""
         
