@@ -3,7 +3,7 @@ from . import config
 from os import remove,rename,mkdir,chdir,remove
 from os.path import isfile,isdir,basename
 from pathlib import Path
-from subprocess import Popen
+from subprocess import Popen,DEVNULL
 from shutil import copy,rmtree
 
 cfg = config.config
@@ -96,7 +96,7 @@ class Card:
                 f.writelines(iter(cardWriteCommand))
 
             with open(tempDirectory / 'ezmse-in.txt','r') as f:
-                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f):
+                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=DEVNULL):
                     pass
             if defaultImageScriptReplaced:
                 remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
