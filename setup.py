@@ -1,6 +1,10 @@
 from setuptools import setup
 from setuptools import find_packages
 from configparser import ConfigParser
+from pathlib import Path
+
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name='ezmse',
@@ -10,7 +14,8 @@ setup(
     author_email='thomasatkacz@gmail.com',
     url='https://github.com/TomTkacz/EasyMSE',
     packages=find_packages(),
-    long_description="package description, but long",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     package_data={
         'ezmse': ['include/*'],
     },
