@@ -70,12 +70,12 @@ class Card:
             tempDirectory = Path(mseFolderPath / 'temp')
             isValidImage = self.__checkImageValidity()
             defaultImageScriptReplaced = False
-            imagePath,imageName,imageFileExtension = self.__getImageInfo()
 
             mkdir(tempDirectory)
             copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
             
             if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
+                imagePath,imageName,imageFileExtension = self.__getImageInfo()
                 if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}'):
                     remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}')
                 copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
