@@ -9,7 +9,7 @@ long_description = (this_directory / "README.md").read_text()
 setup(
     name='ezmse',
     version='0.1.0',
-    description='some package description!',
+    description='A Python package for generating custom Magic: The Gathering cards',
     author='Tom Tkacz',
     author_email='thomasatkacz@gmail.com',
     url='https://github.com/TomTkacz/EasyMSE',
