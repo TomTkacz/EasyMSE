@@ -1,11 +1,9 @@
-<h1 align="center">
+<div align="center">
     <img src="https://i.imgur.com/ldS8Akl.png">
-</h1>
-
-<h1 align="center">
     <img src="https://img.shields.io/pypi/v/ezmse?label=PyPI%20Version">
     <img src="https://github.com/TomTkacz/EasyMSE/actions/workflows/unit-tests.yml/badge.svg">
-</h1>
+</div>
+<br>
 
 EasyMSE is a Python package for creating Magic: The Gathering cards from code or the command line. It interfaces with an installation of Magic Set Editor 2 and its built in CLI to make generating custom cards easier.
 
@@ -39,9 +37,9 @@ myCard.image = "cheese.jpg"
 myCard.export("cheese-the-destroyer.png")
 ```
 
-<h1 align="center">
+<div align="center">
     <img src="https://i.imgur.com/hEl6eJx.png">
-</h1>
+</div>
 
 # Developing EasyMSE
 
