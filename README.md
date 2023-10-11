@@ -31,7 +31,7 @@ myCard.setCode = "XXX-XX"
 myCard.text = r"Indestructible\n<sym>T</sym>: Draw one BILLION cards"
 myCard.image = "cheese.jpg"
 
-myCard.export("card.png")
+myCard.export("cheese-the-destroyer.png")
 ```
 
 <h1 align="center">
