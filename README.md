@@ -1,7 +1,8 @@
 <div align="center">
     <img src="https://i.imgur.com/ldS8Akl.png">
-    <img src="https://img.shields.io/pypi/v/ezmse?label=PyPI%20Version">
     <img src="https://github.com/TomTkacz/EasyMSE/actions/workflows/unit-tests.yml/badge.svg">
+    <img src="https://img.shields.io/pypi/v/ezmse?label=PyPI%20Version">
+    <img src="https://img.shields.io/github/last-commit/TomTkacz/EasyMSE/main?label=Last%20Commit">
 </div>
 <br>
 
