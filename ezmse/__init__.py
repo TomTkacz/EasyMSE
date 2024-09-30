@@ -1,4 +1,5 @@
 from . import config
+from .utils import StringTemplate
 
 from os import remove,rename,mkdir,chdir,remove
 from os.path import isfile,isdir,basename
@@ -10,9 +11,18 @@ cfg = config.config
 
 class Card:
     
+    __CARD_WRITE_COMMAND = StringTemplate(
+        """:load set.mse-set
+            my_card := new_card(|)
+            write_image_file(my_card, file: \"|\")
+        """
+    )
+    
     __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
         
-    def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",setCode="[setCode]"):
+    def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",
+                 castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",
+                 setCode="[setCode]"):
         
         self.name = name
         self.text = text
@@ -29,9 +39,11 @@ class Card:
         
         self.__formattedFields = {}
         
+        # initializes the keys of the __formattedFields dict to be the __fieldNames
         for fieldName in Card.__fieldNames:
             self.__formattedFields.setdefault(fieldName)
-            
+    
+    # formats card fields for displaying
     def __formatFields(self):
         self.__formattedFields['name'] = f"\"{self.name}\""
         self.__formattedFields['text'] = f"\"{self.text}\""
@@ -44,6 +56,7 @@ class Card:
         self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
         self.__formattedFields['set_code'] = f"\"{self.setCode}\""
         
+    # creates a string of card parameters that MSE's "new_card" command can recognize
     def __generateNewCardParamsString(self):
         formattedParams = [f"{fieldName}: {value}" for fieldName, value in self.__formattedFields.items()]
         return "[" + ", ".join(formattedParams) + "]"
@@ -57,52 +70,63 @@ class Card:
         imageFileExtension = imageName[-3:]
         return (imagePath,imageName,imageFileExtension)
 
+    # exports the card to an image file
     def export(self,fileName="card.jpg"):
         
         self.__formatFields()
         paramsString = self.__generateNewCardParamsString()
-        cardWriteCommand = f":load set.mse-set\nmy_card := new_card({paramsString})\nwrite_image_file(my_card, file: \"{fileName}\")"
         mseFolderPath = cfg['file-locations']['mse-folder']
         
-        if isdir(mseFolderPath):
-            
-            mseFolderPath = Path(mseFolderPath)
-            tempDirectory = Path(mseFolderPath / 'temp')
-            isValidImage = self.__checkImageValidity()
-            defaultImageScriptReplaced = False
-
-            mkdir(tempDirectory)
-            copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
-            
-            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
-                imagePath,imageName,imageFileExtension = self.__getImageInfo()
-                if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}'):
-                    remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}')
-                copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                chdir(mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageFileExtension}')
-                copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
-                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-                copy(config.rootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom-image-script-{imageFileExtension}', 'scripts')
-                chdir(mseFolderPath)
-                defaultImageScriptReplaced = True
-                
-        else:
-            mseFolderPath = None
-            
-        if mseFolderPath:
-            with open(tempDirectory / 'ezmse-in.txt','w') as f:
-                f.writelines(iter(cardWriteCommand))
-
-            with open(tempDirectory / 'ezmse-in.txt','r') as f:
-                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=DEVNULL):
-                    pass
-            if defaultImageScriptReplaced:
-                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-                copy(tempDirectory / 'scripts', mseFolderPath / 'data' / 'magic-default-image.mse-include')
-                
-            rmtree(tempDirectory)
-            remove(mseFolderPath / 'set.mse-set')
-        else:
+        if not isdir(mseFolderPath):
             print("no path found to Magic Set Editor :(")
+            
+        mseFolderPath = Path(mseFolderPath)
+        tempDirectory = Path(mseFolderPath / 'temp')
+        isValidImage = self.__checkImageValidity()
+        defaultImageScriptReplaced = False
+
+        try:
+            mkdir(tempDirectory)
+        except:
+            pass
+        
+        # copies a default MSE set file into directory containing MSE folders (needed for generating a card)
+        copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
+        
+        if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
+            
+            imagePath,imageName,imageFileExtension = self.__getImageInfo()
+            
+            # remove previous custom card image, if any
+            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}'):
+                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}')
+            
+            # copy custom image into the proper .mse-include folder and name it custom.[file extension]
+            copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
+            chdir(mseFolderPath / 'data' / 'magic-default-image.mse-include')
+            rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageFileExtension}')
+            
+            # copy existing MSE script in .mse-include folder into a temp folder
+            # and have custom-image-script-[image file format] take its place
+            copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
+            remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
+            copy(config.rootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+            rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom-image-script-{imageFileExtension}', 'scripts')
+            chdir(mseFolderPath)
+            
+            defaultImageScriptReplaced = True
+        
+        # write MSE commands to ezmse-in.txt, using it as stdin for MSE's CLI
+        with open(tempDirectory / 'ezmse-in.txt','w') as f:
+            f.writelines(iter( self.__CARD_WRITE_COMMAND(paramsString,fileName) ))
+        with open(tempDirectory / 'ezmse-in.txt','r') as f:
+            with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=DEVNULL):
+                pass
+        
+        # restore original script file and clean up
+        if defaultImageScriptReplaced:
+            remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
+            copy(tempDirectory / 'scripts', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+            
+        rmtree(tempDirectory)
+        remove(mseFolderPath / 'set.mse-set')

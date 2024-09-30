@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools >= 75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+version = "0.1.2"
+name = "ezmse"
+dependencies = [
+    "pyfakefs>=5.2"
+]
+requires-python = ">= 3.11"
+authors = [
+    {name = "Tom Tkacz", email = "thomasatkacz@gmail.com"}
+]
+description = "A Python package for generating custom Magic: The Gathering cards"
+readme = "README.md"
+license = {file = "LICENSE"}
+keywords = ["magic the gathering","mtg","magic set editor","mse"]
+classifiers = [
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Games/Entertainment",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+ezmse = ["include/*"]
+
+[project.urls]
+Homepage = "https://www.thomastkacz.com/portfolio/"
+Repository = "https://github.com/TomTkacz/EasyMSE"
+Issues = "https://github.com/TomTkacz/EasyMSE/issues"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4"
+]
