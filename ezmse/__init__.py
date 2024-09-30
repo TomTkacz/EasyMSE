@@ -11,7 +11,14 @@ cfg = config.config
 
 class Card:
     
-    __CARD_WRITE_COMMAND = StringTemplate( ":load set.mse-set\nmy_card := new_card(|)\nwrite_image_file(my_card, file: \"|\")" )
+    __CARD_WRITE_COMMAND = StringTemplate(
+        """
+        :load set.mse-set
+        my_card := new_card(|)
+        write_image_file(my_card, file: \"|\")
+        """
+    )
+    
     __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
         
     def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",
