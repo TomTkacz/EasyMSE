@@ -12,10 +12,9 @@ cfg = config.config
 class Card:
     
     __CARD_WRITE_COMMAND = StringTemplate(
-        """
-        :load set.mse-set
-        my_card := new_card(|)
-        write_image_file(my_card, file: \"|\")
+        """:load set.mse-set
+            my_card := new_card(|)
+            write_image_file(my_card, file: \"|\")
         """
     )
     

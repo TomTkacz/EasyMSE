@@ -6,18 +6,29 @@ class StringTemplate:
         
         self.__raw = inputString
     
+    # really messy, honestly probably only works for my specific problem
     def __call__(self,*values):
         
         outputString=""
         splitString = self.__raw.split("|")
         insertHere = splitString[0]=="|"
+        insertTextIndex = 0
+        insertValueIndex = 0
         
-        for i,v in enumerate(values):
+        while (insertValueIndex < len(values)-1):
             if insertHere:
-                outputString += v
+                outputString += values[insertValueIndex]
+                insertValueIndex += 1
             else:
-                outputString += splitString[i]
+                outputString += splitString[insertTextIndex]
+                insertTextIndex += 2
             insertHere = not insertHere
+        
+        insertTextIndex -= 1
+        for i in range(insertTextIndex,len(splitString),1):
+            outputString += splitString[i]
+            if i < len(values):
+                outputString += values[i]
         
         return outputString
     
