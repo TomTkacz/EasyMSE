@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 from os import rename,remove
 from os.path import dirname,isfile
+from datetime import datetime
 import zipfile
 
 # gives the user more fine-grained control over a card's properties
@@ -10,16 +11,19 @@ class SetConfiguration:
     
     __attribs={}
     
-    # @classmethod
-    # def __jsonCustomAttribValuesHook(self,obj):
+    @classmethod
+    def __jsonCustomAttribValuesHook(self,obj):
         
-    #     def set(k,v):
-    #         if k in list(obj.keys()):
-    #             obj[k]=v
+        def set(k,v):
+            if k in list(obj.keys()):
+                obj[k]=v
+                
+        currentTimeFormatted = str(datetime.today()).split(".")[0]
+                
+        set('time_created',currentTimeFormatted)
+        set('time_modified',currentTimeFormatted)
         
-    #     set('name','awesome card')
-        
-    #     return obj
+        return obj
     
     # def __getattr__(self, name):
     #     try:
@@ -40,7 +44,10 @@ class SetConfiguration:
         
         with open( Path(dirname(__file__))/"include"/"setconfigs"/"set.json","r") as f:
             
-            self.__attribs = json.loads(f.read())
+            self.__attribs = json.loads(
+                f.read(),
+                object_hook = SetConfiguration.__jsonCustomAttribValuesHook
+            )
     
     # TODO: get rid of multiple newlines after nested dicts
     def format(self,attribDict=None,indent=0):
