@@ -1,0 +1,56 @@
+{
+    "Default": {
+
+        "mse_version": "2.0.2",
+        "game": "magic",
+        "game_version": "2020-04-25",
+        "stylesheet": "m15-altered",
+        "stylesheet_version": "2023-02-13",
+        "set_info": {
+            "title": "",
+            "description": "",
+            "artist": "",
+            "copyright": "",
+            "set_code": "",
+            "set_language": "English",
+            "masterpiece_set_code": "",
+            "symbol": "",
+            "masterpiece_symbol": ""
+        },
+        "styling": {
+            "magic-m15-altered": {
+                "text_box_mana_symbols": "magic-mana-small.mse-symbol-font",
+                "level_mana_symbols": "magic-mana-large.mse-symbol-font",
+                "overlay": ""
+            }
+        },
+        "card": {
+            "has_styling": "false",
+            "notes": "",
+            "time_created": "",
+            "time_modified": "",
+            "name": "",
+            "casting_cost": "",
+            "image": "",
+            "super_type": "",
+            "sub_type": "",
+            "rarity": "",
+            "rule_text": "",
+            "flavor_text": "",
+            "power": "",
+            "toughness": "",
+            "card_code_text": "",
+            "copyright": "",
+            "image_2": "",
+            "copyright_2": "",
+            "copyright_3": "",
+            "mainframe_image": "",
+            "mainframe_image_2": ""
+        },
+        "version_control": {
+            "type": "none"
+        },
+        "apprentice_code": ""
+    }
+
+}

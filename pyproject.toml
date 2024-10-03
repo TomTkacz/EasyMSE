@@ -30,7 +30,7 @@ classifiers = [
 where = ["."]
 
 [tool.setuptools.package-data]
-ezmse = ["include/*"]
+ezmse = ["include/*","include/setconfigs/*"]
 
 [project.urls]
 Homepage = "https://www.thomastkacz.com/portfolio/"
