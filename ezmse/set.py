@@ -68,7 +68,7 @@ class SetConfiguration:
         
         # compress formatted set fipe to zip
         zip = zipfile.ZipFile(setZipPath,mode='w')
-        zip.write(setZipPath)
+        zip.write(rawSetPath)
         zip.close()
         
         if isfile(Path(dir) / "set.mse-set"):
