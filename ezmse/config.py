@@ -3,14 +3,14 @@ from os.path import isfile,isdir
 from os import getcwd,listdir
 from pathlib import Path
 
-rootDirectory = Path(__file__).parent.resolve()
+packageRootDirectory = Path(__file__).parent.resolve()
 config = ConfigParser()
-config.read(rootDirectory / 'include' / 'config.ini')
+config.read(packageRootDirectory / 'include' / 'config.ini')
 
 def update():
-    with open(rootDirectory / 'include' / 'config.ini', 'w') as f:
+    with open(packageRootDirectory / 'include' / 'config.ini', 'w') as f:
         config.write(f)
-    config.read(rootDirectory / 'include' / 'config.ini')
+    config.read(packageRootDirectory / 'include' / 'config.ini')
     
 def wipe(section=None,option=None):
     if not section:
@@ -45,11 +45,11 @@ def setMSEFolder(path):
         config['file-locations']['mse-com'] = str(path / 'magicseteditor.com')
         update()
     else:
-        print("folder must contain the files 'magicseteditor.exe' 'magicseteditor.com' and the directories 'data' 'resource'")
+        raise FileNotFoundError("folder must contain the files 'magicseteditor.exe' 'magicseteditor.com' and the directories 'data' 'resource'")
 
 if config['file-locations']['mse-folder'] == '':
     setMSEFolder(Path(getcwd()))
      
-if config['file-locations']['mse-set'] == '' and isfile(rootDirectory / 'include' / 'set.mse-set'):
-    config['file-locations']['mse-set'] = str(rootDirectory / 'include' / 'set.mse-set')
+if config['file-locations']['mse-set'] == '' and isfile( Path(getcwd()) / 'set.mse-set' ):
+    config['file-locations']['mse-set'] = str( Path(getcwd()) / 'set.mse-set')
     update()

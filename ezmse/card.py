@@ -1,5 +1,6 @@
-from . import config
+from .config import *
 from .utils import StringTemplate
+from .set import SetConfiguration
 
 from os import remove,rename,mkdir,chdir,remove
 from os.path import isfile,isdir,basename
@@ -7,7 +8,7 @@ from pathlib import Path
 from subprocess import Popen,DEVNULL
 from shutil import copy,rmtree
 
-cfg = config.config
+cfg = config
 
 class Card:
     
@@ -22,7 +23,7 @@ class Card:
         
     def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",
                  castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",
-                 setCode="[setCode]"):
+                 setCode="[setCode]",config=None):
         
         self.name = name
         self.text = text
@@ -36,6 +37,7 @@ class Card:
         self.illustrator = illustrator
         self.setCode = setCode
         self.image = image
+        self.config = config if config else SetConfiguration()
         
         self.__formattedFields = {}
         
@@ -78,21 +80,27 @@ class Card:
         mseFolderPath = cfg['file-locations']['mse-folder']
         
         if not isdir(mseFolderPath):
-            print("no path found to Magic Set Editor :(")
+            raise FileNotFoundError("no path found to Magic Set Editor :(")
             
         mseFolderPath = Path(mseFolderPath)
         tempDirectory = Path(mseFolderPath / 'temp')
         isValidImage = self.__checkImageValidity()
         defaultImageScriptReplaced = False
+        
+        if not isfile( mseFolderPath / 'set.mse-set' ):
+            self.config.build(mseFolderPath)
+            setSetLocation( str(mseFolderPath / 'set.mse-set') )
+        
+        if str(mseFolderPath / 'set.mse-set') != cfg['file-locations']['mse-set']:
+            copy( cfg['file-locations']['mse-set'], mseFolderPath )
 
         try:
             mkdir(tempDirectory)
         except:
             pass
         
-        # copies a default MSE set file into directory containing MSE folders (needed for generating a card)
-        copy( config.rootDirectory / 'include' / 'set.mse-set', mseFolderPath )
-        
+        # copies either a built or default MSE set file into directory containing MSE folders
+        # (needed for generating a card)
         if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
             
             imagePath,imageName,imageFileExtension = self.__getImageInfo()
@@ -110,18 +118,22 @@ class Card:
             # and have custom-image-script-[image file format] take its place
             copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
             remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-            copy(config.rootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
+            copy(packageRootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
             rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom-image-script-{imageFileExtension}', 'scripts')
             chdir(mseFolderPath)
             
             defaultImageScriptReplaced = True
         
+        else:
+            raise FileNotFoundError("no *.mse-include/scripts file could be found.")
+        
         # write MSE commands to ezmse-in.txt, using it as stdin for MSE's CLI
         with open(tempDirectory / 'ezmse-in.txt','w') as f:
             f.writelines(iter( self.__CARD_WRITE_COMMAND(paramsString,fileName) ))
         with open(tempDirectory / 'ezmse-in.txt','r') as f:
-            with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=DEVNULL):
-                pass
+            with open(mseFolderPath / "out.txt", 'w') as log:
+                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=log):
+                    pass
         
         # restore original script file and clean up
         if defaultImageScriptReplaced:

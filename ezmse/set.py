@@ -69,18 +69,19 @@ class SetConfiguration:
         
         rawSetPath = Path(dir) / "set"
         setZipPath = Path(dir) / "set.zip"
+        mseSetPath = Path(dir) / "set.mse-set"
         
         with open(rawSetPath,"w") as f:
             f.write(self.format())
         
         # compress formatted set fipe to zip
         zip = zipfile.ZipFile(setZipPath,mode='w')
-        zip.write(rawSetPath)
+        zip.write(str(rawSetPath),"set")
         zip.close()
         
-        if isfile(Path(dir) / "set.mse-set"):
-            remove(Path(dir) / "set.mse-set")
+        if isfile(mseSetPath):
+            remove(mseSetPath)
         
         # give the file the 'mse-set' extension
-        rename(setZipPath, Path(dir) / "set.mse-set")
+        rename(setZipPath, mseSetPath)
         remove(rawSetPath)
