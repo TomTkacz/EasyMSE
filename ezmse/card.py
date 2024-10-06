@@ -1,4 +1,4 @@
-from .config import *
+from .config import mseConfig
 from .utils import StringTemplate
 from .set import SetConfiguration
 
@@ -7,8 +7,6 @@ from os.path import isfile,isdir,basename
 from pathlib import Path
 from subprocess import Popen,DEVNULL
 from shutil import copy,rmtree
-
-cfg = config
 
 class Card:
     
@@ -77,22 +75,12 @@ class Card:
         
         self.__formatFields()
         paramsString = self.__generateNewCardParamsString()
-        mseFolderPath = cfg['file-locations']['mse-folder']
         
-        if not isdir(mseFolderPath):
-            raise FileNotFoundError("no path found to Magic Set Editor :(")
-            
-        mseFolderPath = Path(mseFolderPath)
+        mseFolderPath = Path(mseConfig['file-locations']['mse-folder'])
+
         tempDirectory = Path(mseFolderPath / 'temp')
         isValidImage = self.__checkImageValidity()
         defaultImageScriptReplaced = False
-        
-        if not isfile( mseFolderPath / 'set.mse-set' ):
-            self.config.build(mseFolderPath)
-            setSetLocation( str(mseFolderPath / 'set.mse-set') )
-        
-        if str(mseFolderPath / 'set.mse-set') != cfg['file-locations']['mse-set']:
-            copy( cfg['file-locations']['mse-set'], mseFolderPath )
 
         try:
             mkdir(tempDirectory)
