@@ -1,4 +1,4 @@
-from .config import mseConfig
+from .config import mseConfig,packageRootDirectory
 from .utils import StringTemplate
 from .set import SetConfiguration
 
