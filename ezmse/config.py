@@ -52,10 +52,6 @@ class MSEConfig(ConfigParser):
     # try to implicitly resolve path errors
     def resolvePaths(self,updateConfigFile=False):
 
-        folderPath = Path( self['file-locations']['mse-folder'] )
-        setPath = Path( self['file-locations']['mse-set'] )
-        exePath = Path( self['file-locations']['mse-exe'] )
-        comPath = Path( self['file-locations']['mse-com'] )
         cwdPath = Path(getcwd())
 
         try:
