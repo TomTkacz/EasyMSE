@@ -2,7 +2,7 @@ from .config import mseConfig,packageRootDirectory
 from .utils import StringTemplate
 from .set import SetConfiguration
 
-from os import remove,rename,mkdir,chdir,remove
+from os import remove,rename,mkdir,chdir,remove,getcwd
 from os.path import isfile,isdir,basename
 from pathlib import Path
 from subprocess import Popen,DEVNULL
@@ -11,7 +11,7 @@ from shutil import copy,rmtree
 class Card:
     
     __CARD_WRITE_COMMAND = StringTemplate(
-        """:load set.mse-set
+        """:load |
             my_card := new_card(|)
             write_image_file(my_card, file: \"|\")
         """
@@ -77,6 +77,7 @@ class Card:
         paramsString = self.__generateNewCardParamsString()
         
         mseFolderPath = Path(mseConfig['file-locations']['mse-folder'])
+        setPath = Path(mseConfig['file-locations']['mse-set'])
 
         tempDirectory = Path(mseFolderPath / 'temp')
         isValidImage = self.__checkImageValidity()
@@ -86,6 +87,10 @@ class Card:
             mkdir(tempDirectory)
         except:
             pass
+        
+        if not isfile(setPath) or not str(setPath).endswith(".mse-set"):
+            self.config.build(tempDirectory)
+            setPath = tempDirectory/"set.mse-set"
         
         # copies either a built or default MSE set file into directory containing MSE folders
         # (needed for generating a card)
@@ -117,7 +122,7 @@ class Card:
         
         # write MSE commands to ezmse-in.txt, using it as stdin for MSE's CLI
         with open(tempDirectory / 'ezmse-in.txt','w') as f:
-            f.writelines(iter( self.__CARD_WRITE_COMMAND(paramsString,fileName) ))
+            f.writelines(iter( self.__CARD_WRITE_COMMAND(setPath,paramsString,fileName) ))
         with open(tempDirectory / 'ezmse-in.txt','r') as f:
             with open(mseFolderPath / "out.txt", 'w') as log:
                 with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=log):
@@ -129,4 +134,3 @@ class Card:
             copy(tempDirectory / 'scripts', mseFolderPath / 'data' / 'magic-default-image.mse-include')
             
         rmtree(tempDirectory)
-        remove(mseFolderPath / 'set.mse-set')

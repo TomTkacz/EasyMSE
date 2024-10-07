@@ -33,15 +33,11 @@ class MSEConfig(ConfigParser):
 
     def __validatePaths(self):
         folderPath = Path( self['file-locations']['mse-folder'] )
-        setPath = Path( self['file-locations']['mse-set'] )
         exePath = Path( self['file-locations']['mse-exe'] )
         comPath = Path( self['file-locations']['mse-com'] )
         
         if self['file-locations']['mse-folder']=='' or not isdir(folderPath) or not isdir(folderPath/"data") or not isdir(folderPath/"resource"):
             raise DirectoryNotFoundError(f"Directory ({str(folderPath)}) must contain MSE's 'data' and 'resource' folders.")
-        
-        if self['file-locations']['mse-set']=='' or not isfile(setPath.absolute()) or not str(setPath).endswith(".mse-set"):
-            raise SetNotFoundError(f"No valid .mse-set file found at {setPath.cwd()}")
         
         if self['file-locations']['mse-exe']=='' or not isfile(exePath) or ( not str(exePath).endswith("mse.exe") and not str(exePath).endswith("magicseteditor.exe") ):
             raise EXENotFoundError(f"No valid MSE .exe found at {str(exePath.absolute())}")
@@ -61,14 +57,6 @@ class MSEConfig(ConfigParser):
             if isdir(cwdPath / "data" ) and isdir(cwdPath/"resource"):
                 self['file-locations']['mse-folder'] = str(cwdPath)
                 self.resolvePaths()
-
-        except SetNotFoundError:
-
-            for f in listdir(getcwd()):
-                if f.endswith(".mse-set"):
-                    self['file-locations']['mse-set'] = str( cwdPath / f )
-                    self.resolvePaths()
-                    break
 
         except EXENotFoundError:
 

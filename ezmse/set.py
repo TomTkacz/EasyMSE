@@ -65,7 +65,7 @@ class SetConfiguration:
     def printAttribs(self):
         print(self.__attribs)
     
-    def build(self,dir):
+    def build(self,dir="."):
         
         rawSetPath = Path(dir) / "set"
         setZipPath = Path(dir) / "set.zip"
