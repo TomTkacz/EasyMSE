@@ -19,19 +19,20 @@ class Card:
     
     __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
         
-    def __init__(self,image=None,name="[name]",text="[text]",type="[type]",superType="[superType]",
-                 castingCost=1,power=1,toughness=1,rarity="Common",color="Blue",illustrator="[illustrator]",
-                 setCode="[setCode]",config=None):
+    def __init__(self,image=None,name="[name]",text="[text]",superType="[superType]",type="[type]",subType="[subType]",
+                 castingCost=1,power=1,toughness=1,rarity="Common",colors="red",illustrator="[illustrator]",setCode="[setCode]",
+                 config=None):
         
         self.name = name
         self.text = text
-        self.type = type
         self.superType = superType
+        self.type = type
+        self.subType = subType
         self.castingCost = castingCost
         self.power = power
         self.toughness = toughness
         self.rarity = rarity
-        self.color = color
+        self.colors = colors
         self.illustrator = illustrator
         self.setCode = setCode
         self.image = image
@@ -43,18 +44,22 @@ class Card:
         for fieldName in Card.__fieldNames:
             self.__formattedFields.setdefault(fieldName)
     
-    # formats card fields for displaying
+    # formats card fields for parsing/displaying
     def __formatFields(self):
-        self.__formattedFields['name'] = f"\"{self.name}\""
-        self.__formattedFields['text'] = f"\"{self.text}\""
-        self.__formattedFields['type'] = f"\"{self.type}\""
-        self.__formattedFields['super_type'] = f"\"{self.superType[0].upper()}{self.superType[1:]}\""
-        self.__formattedFields['casting_cost'] = f"\"{self.castingCost}\""
-        self.__formattedFields['pt'] = f"\"{self.power}/{self.toughness}\""
-        self.__formattedFields['card_color'] = f"\"{self.color.lower()}\""
-        self.__formattedFields['rarity'] = f"\"{self.rarity.lower()}\""
-        self.__formattedFields['illustrator'] = f"\"{self.illustrator}\""
-        self.__formattedFields['set_code'] = f"\"{self.setCode}\""
+        
+        self.__formattedFields['name'] = f"{self.name}"
+        self.__formattedFields['text'] = f"{self.text}"
+        self.__formattedFields['type'] = f"{self.superType} {self.type} - {self.subType}"
+        self.__formattedFields['super_type'] = f"{self.superType}"
+        self.__formattedFields['casting_cost'] = f"{self.castingCost}"
+        self.__formattedFields['pt'] = f"{self.power}/{self.toughness}"
+        self.__formattedFields['card_color'] = f"{ ",".join([color.lower() for color in self.colors]) if isinstance(self.colors,list) else self.colors.lower() }"
+        self.__formattedFields['rarity'] = f"{self.rarity.lower()}"
+        self.__formattedFields['illustrator'] = f"{self.illustrator}"
+        self.__formattedFields['set_code'] = f"{self.setCode}"
+
+        for k,v in self.__formattedFields.items():
+            self.__formattedFields[k] = f"\"{v}\""
         
     # creates a string of card parameters that MSE's "new_card" command can recognize
     def __generateNewCardParamsString(self):
