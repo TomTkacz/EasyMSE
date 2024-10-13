@@ -85,3 +85,10 @@ class SetConfiguration:
         # give the file the 'mse-set' extension
         rename(setZipPath, mseSetPath)
         remove(rawSetPath)
+
+# isSymbolString indicates whether t contains symbols
+# as opposed to t being the symbol itself
+def SYM(t,isSymbolString=False):
+    if not isSymbolString:
+        return f"<sym>{t}</sym>"
+    return str(t).replace("[[","<sym>").replace("]]","</sym>")

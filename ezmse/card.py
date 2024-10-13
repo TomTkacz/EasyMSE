@@ -1,6 +1,6 @@
 from .config import mseConfig,packageRootDirectory
 from .utils import StringTemplate
-from .set import SetConfiguration
+from .set import SetConfiguration,SYM
 
 from os import remove,rename,mkdir,chdir,remove,getcwd
 from os.path import isfile,isdir,basename
@@ -48,7 +48,7 @@ class Card:
     def __formatFields(self):
         
         self.__formattedFields['name'] = f"{self.name}"
-        self.__formattedFields['text'] = f"{self.text}"
+        self.__formattedFields['text'] = f"{SYM(self.text,True)}"
         self.__formattedFields['type'] = f"{self.superType} {self.type} - {self.subType}"
         self.__formattedFields['super_type'] = f"{self.superType}"
         self.__formattedFields['casting_cost'] = f"{self.castingCost}"
