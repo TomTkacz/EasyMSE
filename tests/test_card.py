@@ -19,10 +19,16 @@ def test_generateNewCardParamsString(card):
     
 def test_checkImageValidity(card,fs):
     fs.create_file("myimage.jpg")
-    card.image = "myimage.jpg"
-    assert card._Card__checkImageValidity()
+    card.imagePath = "myimage.jpg"
+    try:
+        card._Card__assertValidImage(card.imagePath)
+    except:
+        assert False
     
 def test_checkImageValidity_subDirectory(card,fs):
     fs.create_file("src/myimage.jpg")
-    card.image = "src/myimage.jpg"
-    assert card._Card__checkImageValidity()
+    card.imagePath = "src/myimage.jpg"
+    try:
+        card._Card__assertValidImage(card.imagePath)
+    except:
+        assert False
