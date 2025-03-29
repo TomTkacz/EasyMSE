@@ -1,54 +1,70 @@
 from .config import mseConfig,packageRootDirectory
 from .utils import StringTemplate
-from .set import SetConfiguration,SYM
+from .set import SetConfiguration,SYM,DEFAULT_STYLE
+from .error import *
 
-from os import remove,rename,mkdir,chdir,remove,getcwd
-from os.path import isfile,isdir,basename
+from os import mkdir
+from os.path import isfile
 from pathlib import Path
 from subprocess import Popen,DEVNULL
-from shutil import copy,rmtree
+from shutil import rmtree
+
+DEFAULT_IMAGEPATH = packageRootDirectory/"include"/"default_image.png"
 
 class Card:
     
     __CARD_WRITE_COMMAND = StringTemplate(
         """:load |
+            import_image(\"|\")
             my_card := new_card(|)
             write_image_file(my_card, file: \"|\")
         """
     )
     
-    __fieldNames = ['name','text','type','super_type','casting_cost','pt','card_color','rarity','illustrator','set_code']
-        
-    def __init__(self,image=None,name="[name]",text="[text]",superType="[superType]",type="[type]",subType="[subType]",
-                 castingCost=1,power=1,toughness=1,rarity="Common",colors="red",illustrator="[illustrator]",setCode="[setCode]",
-                 config=None):
-        
-        self.name = name
-        self.text = text
-        self.superType = superType
-        self.type = type
-        self.subType = subType
-        self.castingCost = castingCost
-        self.power = power
-        self.toughness = toughness
-        self.rarity = rarity
-        self.colors = colors
-        self.illustrator = illustrator
-        self.setCode = setCode
-        self.image = image
-        self.config = config if config else SetConfiguration()
+    def __init__(self,style=DEFAULT_STYLE):
+
+        self.name = "[name]"
+        self.text = "[text]"
+        self.superType = "[superType]"
+        self.type = "[type]"
+        self.subType = "[subType]"
+        self.castingCost = "RGB"
+        self.power = 0
+        self.toughness = 0
+        self.rarity = "Common"
+        self.colors = "Green"
+        self.illustrator = "[illustrator]"
+        self.setCode = "XXX"
+        self.flavorText = ""
+        self.imagePath = DEFAULT_IMAGEPATH
+
+        try:
+            self.setConfig = SetConfiguration(style)
+        except Exception as e:
+            print(f"{str(e)} Proceeding with default styling ({DEFAULT_STYLE}).")
+            self.setConfig = SetConfiguration()
         
         self.__formattedFields = {}
+
+        # used for setting fields other than the basic above types
+        # can be accessed by subscripting the card object e.g. card['name'] = 'my card'
+        self.__overwrittenFields = {} 
+
+    def __getitem__(self,key):
+        if key in self.__dict__['_Card_overwrittenFields'].keys():
+            return self.__dict__['_Card_overwrittenFields'][key]
+        if key in self.__dict__['_Card__formattedFields'].keys():
+            return self.__dict__['_Card__formattedFields'][key]
+        return None
+
+    def __setitem__(self,key,value):
+        self.__dict__['_Card__overwrittenFields'][key] = value
         
-        # initializes the keys of the __formattedFields dict to be the __fieldNames
-        for fieldName in Card.__fieldNames:
-            self.__formattedFields.setdefault(fieldName)
-    
     # formats card fields for parsing/displaying
     def __formatFields(self):
         
         self.__formattedFields['name'] = f"{self.name}"
-        self.__formattedFields['text'] = f"{SYM(self.text,True)}"
+        self.__formattedFields['text'] = rf"{SYM(self.text,True)}\n<i-flavor>{self.flavorText}</i-flavor>"
         self.__formattedFields['type'] = f"{self.superType} {self.type} - {self.subType}"
         self.__formattedFields['super_type'] = f"{self.superType}"
         self.__formattedFields['casting_cost'] = f"{self.castingCost}"
@@ -57,7 +73,13 @@ class Card:
         self.__formattedFields['rarity'] = f"{self.rarity.lower()}"
         self.__formattedFields['illustrator'] = f"{self.illustrator}"
         self.__formattedFields['set_code'] = f"{self.setCode}"
+        self.__formattedFields['image'] = Path(self.imagePath).stem
 
+        # overwrite custom fields
+        for k,v in self.__overwrittenFields.items():
+            self.__formattedFields[k] = v
+
+        # surround all values with double quotes
         for k,v in self.__formattedFields.items():
             self.__formattedFields[k] = f"\"{v}\""
         
@@ -65,28 +87,31 @@ class Card:
     def __generateNewCardParamsString(self):
         formattedParams = [f"{fieldName}: {value}" for fieldName, value in self.__formattedFields.items()]
         return "[" + ", ".join(formattedParams) + "]"
-    
-    def __checkImageValidity(self):
-        return self.image is not None and type(self.image) is str and isfile(self.image) and ( self.image.endswith(".jpg") or self.image.endswith(".png") )
-    
-    def __getImageInfo(self):
-        imagePath = Path(self.image)
-        imageName = basename(self.image)
-        imageFileExtension = imageName[-3:]
-        return (imagePath,imageName,imageFileExtension)
+
+    def __assertValidImage(self,imagePath):
+        fullPathString = Path(imagePath).resolve().as_posix()
+        if not isfile(imagePath):
+            raise FileNotFoundError(f"The file '{fullPathString}' could not be found.")
+        if not ( imagePath.endswith(".jpg") or imagePath.endswith(".png") ):
+            raise ImageTypeNotSupportedError(f"Failed to load '{fullPathString}'. Only PNG and JPG image types are supported.")
 
     # exports the card to an image file
-    def export(self,fileName="card.jpg"):
-        
+    def export(self,fileName="card.jpg",generateLog=False):
+
+        try:
+            self.__assertValidImage(self.imagePath)
+        except Exception as e:
+            print(f"{e} Proceeding with default image.")
+            self.imagePath = DEFAULT_IMAGEPATH
+
         self.__formatFields()
         paramsString = self.__generateNewCardParamsString()
         
         mseFolderPath = Path(mseConfig['file-locations']['mse-folder'])
         setPath = Path(mseConfig['file-locations']['mse-set'])
 
-        tempDirectory = Path(mseFolderPath / 'temp')
-        isValidImage = self.__checkImageValidity()
-        defaultImageScriptReplaced = False
+        tempDirectory = Path(mseFolderPath/"temp")
+        imagePath = Path(self.imagePath).resolve().as_posix()
 
         try:
             mkdir(tempDirectory)
@@ -94,48 +119,22 @@ class Card:
             pass
         
         if not isfile(setPath) or not str(setPath).endswith(".mse-set"):
-            self.config.build(tempDirectory)
+            self.setConfig.build(tempDirectory)
             setPath = tempDirectory/"set.mse-set"
         
-        # copies either a built or default MSE set file into directory containing MSE folders
-        # (needed for generating a card)
-        if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts') and isValidImage:
-            
-            imagePath,imageName,imageFileExtension = self.__getImageInfo()
-            
-            # remove previous custom card image, if any
-            if isfile(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}'):
-                remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom.{imageFileExtension}')
-            
-            # copy custom image into the proper .mse-include folder and name it custom.[file extension]
-            copy(imagePath, mseFolderPath / 'data' / 'magic-default-image.mse-include')
-            chdir(mseFolderPath / 'data' / 'magic-default-image.mse-include')
-            rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / imageName, f'custom.{imageFileExtension}')
-            
-            # copy existing MSE script in .mse-include folder into a temp folder
-            # and have custom-image-script-[image file format] take its place
-            copy(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts', tempDirectory)
-            remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-            copy(packageRootDirectory / 'include' / f'custom-image-script-{imageFileExtension}', mseFolderPath / 'data' / 'magic-default-image.mse-include')
-            rename(mseFolderPath / 'data' / 'magic-default-image.mse-include' / f'custom-image-script-{imageFileExtension}', 'scripts')
-            chdir(mseFolderPath)
-            
-            defaultImageScriptReplaced = True
-        
-        else:
-            raise FileNotFoundError("no *.mse-include/scripts file could be found.")
-        
-        # write MSE commands to ezmse-in.txt, using it as stdin for MSE's CLI
-        with open(tempDirectory / 'ezmse-in.txt','w') as f:
-            f.writelines(iter( self.__CARD_WRITE_COMMAND(setPath,paramsString,fileName) ))
+        # write MSE commands to temp/ezmse-in.txt, using it as stdin for MSE's CLI
+        with open(tempDirectory / 'ezmse-in.txt','w',encoding="utf8") as f:
+            f.writelines(iter( self.__CARD_WRITE_COMMAND(setPath,imagePath,paramsString,fileName) ))
         with open(tempDirectory / 'ezmse-in.txt','r') as f:
-            with open(mseFolderPath / "out.txt", 'w') as log:
-                with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout=log):
-                    pass
+
+            log = None
+            if generateLog:
+                log = open(mseFolderPath / "log.txt", 'w')
+
+            with Popen([str(mseFolderPath / 'magicseteditor.com'),'--cli'],stdin=f,stdout = log if log else DEVNULL):
+                pass
+
+            if log:
+                log.close()
         
-        # restore original script file and clean up
-        if defaultImageScriptReplaced:
-            remove(mseFolderPath / 'data' / 'magic-default-image.mse-include' / 'scripts')
-            copy(tempDirectory / 'scripts', mseFolderPath / 'data' / 'magic-default-image.mse-include')
-            
         rmtree(tempDirectory)

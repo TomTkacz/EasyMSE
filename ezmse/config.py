@@ -1,6 +1,6 @@
 from configparser import ConfigParser
-from os.path import isfile,isdir,abspath
-from os import getcwd,listdir
+from os.path import isfile,isdir
+from os import getcwd
 from pathlib import Path
 from .error import *
 
@@ -9,6 +9,7 @@ configPath = packageRootDirectory / 'include' / 'config.ini'
 
 if not isfile(configPath):
     print("Could not locate ezmse's include/config.ini file. Try reinstalling ezmse.")
+    print("If the issue persists, please submit a report at https://github.com/TomTkacz/EasyMSE/issues")
 
 class MSEConfig(ConfigParser):
 

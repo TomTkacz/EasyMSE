@@ -1,0 +1,20 @@
+{
+    "set_default": {
+
+        "mse_version": "2.0.2",
+        "game": "magic",
+        "game_version": "2020-04-25",
+        "stylesheet": "",
+        "set_info": {
+            "title": "EasyMSE Set",
+            "description": "Generated with EasyMSE! (https://github.com/TomTkacz/EasyMSE)",
+            "copyright": "",
+            "set_language": "English"
+        },
+        "card": {
+            "time_created": "",
+            "time_modified": ""
+        }
+    }
+
+}

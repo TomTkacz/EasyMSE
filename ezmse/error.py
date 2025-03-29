@@ -6,3 +6,6 @@ class EXENotFoundError(Exception):
 
 class COMNotFoundError(Exception):
     pass
+
+class ImageTypeNotSupportedError(Exception):
+    pass
