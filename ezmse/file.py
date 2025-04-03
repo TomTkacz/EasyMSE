@@ -2,16 +2,6 @@ from pathlib import Path
 from os import getcwd
 from zipfile import ZipFile
 
-class SetHandler():
-    
-    def __init__(self,setPath):
-        self.path = Path(setPath) if type(setPath) is str else setPath
-            
-    def getStylePath(self):
-        archive = ZipFile(str(self.path),'r')
-        setData = archive.read("set")
-        return Path(getcwd()) / 'data' / f'magic-{parse(setData)["stylesheet"]}.mse-style'
-    
 # TODO: convert dictionaries with duplicate keys to lists... somehow
 def parse(text):
         

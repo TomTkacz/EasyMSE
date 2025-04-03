@@ -11,6 +11,7 @@ if not isfile(configPath):
     print("Could not locate ezmse's include/config.ini file. Try reinstalling ezmse.")
     print("If the issue persists, please submit a report at https://github.com/TomTkacz/EasyMSE/issues")
 
+# manages the ezmse/include/config.ini file
 class MSEConfig(ConfigParser):
 
     def __init__(self):

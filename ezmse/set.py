@@ -8,13 +8,12 @@ from datetime import datetime
 from .config import mseConfig
 from .error import DirectoryNotFoundError
 
-DEFAULT_STYLE = "m15-altered"
+DEFAULT_STYLE = "m15-altered" # TODO: have additional checks to ensure the default style is actually there
 
-# gives the user more fine-grained control over a card's properties
-# by allowing them to build a set file
+# configures and creates .mse-set files
 class SetConfiguration:
         
-    # sets values when writing to the.mse-set file
+    # sets values when writing to the set file
     def __jsonCustomAttribValuesHook(self,obj):
 
         def set(k,v):

@@ -11,6 +11,7 @@ from shutil import rmtree
 
 DEFAULT_IMAGEPATH = packageRootDirectory/"include"/"default_image.png"
 
+# configures and exports cards
 class Card:
     
     __CARD_WRITE_COMMAND = StringTemplate(

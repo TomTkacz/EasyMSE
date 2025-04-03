@@ -1,3 +1,5 @@
+# essentially a format string able to have values inserted in specific positions dynamically
+# e.g. StringTemplate("hello |!")("world") -> "hello world!"
 class StringTemplate:
     
     __raw=""
