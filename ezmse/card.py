@@ -21,6 +21,17 @@ class Card:
             write_image_file(my_card, file: \"|\")
         """
     )
+
+    def __getitem__(self,key):
+        if key in self.__dict__['_Card_overwrittenFields'].keys():
+            return self.__dict__['_Card_overwrittenFields'][key]
+        if key in self.__dict__['_Card__formattedFields'].keys():
+            return self.__dict__['_Card__formattedFields'][key]
+        return None
+
+    def __setitem__(self,key,value):
+        self.__dict__['_Card__overwrittenFields'][key] = value
+        
     
     def __init__(self,style=DEFAULT_STYLE):
 
@@ -37,7 +48,7 @@ class Card:
         self.illustrator = "[illustrator]"
         self.setCode = "XXX"
         self.flavorText = ""
-        self.imagePath = DEFAULT_IMAGEPATH
+        self.imagePath = DEFAULT_IMAGEPATH.resolve().as_posix() # should always be a string, not Path
 
         try:
             self.setConfig = SetConfiguration(style)
@@ -47,20 +58,11 @@ class Card:
         
         self.__formattedFields = {}
 
-        # used for setting fields other than the basic above types
-        # can be accessed by subscripting the card object e.g. card['name'] = 'my card'
+        # holds user-specified fields to be directly written to the final 'new_card' params string
+        # can be accessed by subscripting the card object
+        # e.g. card['name'] = "some name" (overwrites the value of card.name)
         self.__overwrittenFields = {} 
 
-    def __getitem__(self,key):
-        if key in self.__dict__['_Card_overwrittenFields'].keys():
-            return self.__dict__['_Card_overwrittenFields'][key]
-        if key in self.__dict__['_Card__formattedFields'].keys():
-            return self.__dict__['_Card__formattedFields'][key]
-        return None
-
-    def __setitem__(self,key,value):
-        self.__dict__['_Card__overwrittenFields'][key] = value
-        
     # formats card fields for parsing/displaying
     def __formatFields(self):
         
@@ -84,7 +86,7 @@ class Card:
         for k,v in self.__formattedFields.items():
             self.__formattedFields[k] = f"\"{v}\""
         
-    # creates a string of card parameters that MSE's "new_card" command can recognize
+    # creates a string of parameters that MSE's "new_card" command recognizes 
     def __generateNewCardParamsString(self):
         formattedParams = [f"{fieldName}: {value}" for fieldName, value in self.__formattedFields.items()]
         return "[" + ", ".join(formattedParams) + "]"
@@ -103,7 +105,7 @@ class Card:
             self.__assertValidImage(self.imagePath)
         except Exception as e:
             print(f"{e} Proceeding with default image.")
-            self.imagePath = DEFAULT_IMAGEPATH
+            self.imagePath = DEFAULT_IMAGEPATH.resolve().as_posix()
 
         self.__formatFields()
         paramsString = self.__generateNewCardParamsString()
@@ -112,7 +114,7 @@ class Card:
         setPath = Path(mseConfig['file-locations']['mse-set'])
 
         tempDirectory = Path(mseFolderPath/"temp")
-        imagePath = Path(self.imagePath).resolve().as_posix()
+        imagePath = Path(self.imagePath).resolve().as_posix() # in case user enters relative path
 
         try:
             mkdir(tempDirectory)
