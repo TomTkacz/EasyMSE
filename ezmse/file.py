@@ -1,6 +1,6 @@
 from pathlib import Path
 from os import getcwd
-import zipfile
+from zipfile import ZipFile
 
 class SetHandler():
     
@@ -8,7 +8,7 @@ class SetHandler():
         self.path = Path(setPath) if type(setPath) is str else setPath
             
     def getStylePath(self):
-        archive = zipfile.ZipFile(str(self.path),'r')
+        archive = ZipFile(str(self.path),'r')
         setData = archive.read("set")
         return Path(getcwd()) / 'data' / f'magic-{parse(setData)["stylesheet"]}.mse-style'
     

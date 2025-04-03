@@ -1,6 +1,5 @@
-import json
-import zipfile
-
+from json import loads as jsonloads
+from zipfile import ZipFile
 from pathlib import Path
 from os import rename,remove
 from os.path import dirname,isfile,isdir
@@ -42,7 +41,7 @@ class SetConfiguration:
 
         with open( Path(dirname(__file__))/"include"/"set.json","r") as f:
             
-            self._attribs = json.loads(
+            self._attribs = jsonloads(
                 f.read(),
                 object_hook = self.__jsonCustomAttribValuesHook
             )["set_default"]
@@ -86,7 +85,7 @@ class SetConfiguration:
             f.write(self.format())
         
         # compress formatted set file to zip
-        with zipfile.ZipFile(setZipPath,mode='w') as zip:
+        with ZipFile(setZipPath,mode='w') as zip:
             zip.write(str(rawSetPath),"set")
         
         if isfile(mseSetPath):
