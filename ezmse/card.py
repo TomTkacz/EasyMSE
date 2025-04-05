@@ -37,16 +37,16 @@ class Card:
 
         self.name = "[name]"
         self.text = "[text]"
-        self.superType = "[superType]"
+        self.rarity = "Common"
         self.type = "[type]"
+        self.superType = ""
         self.subType = "[subType]"
         self.castingCost = "RGB"
         self.power = 0
         self.toughness = 0
-        self.rarity = "Common"
-        self.colors = "Green"
-        self.illustrator = "[illustrator]"
-        self.setCode = "XXX"
+        self.colors = "Red"
+        self.illustrator = "EasyMSE"
+        self.setCode = "000"
         self.flavorText = ""
         self.imagePath = DEFAULT_IMAGEPATH.resolve().as_posix() # should always be a string, not Path
 
@@ -68,7 +68,7 @@ class Card:
         
         self.__formattedFields['name'] = f"{self.name}"
         self.__formattedFields['text'] = rf"{SYM(self.text,True)}\n<i-flavor>{self.flavorText}</i-flavor>"
-        self.__formattedFields['type'] = f"{self.superType} {self.type} - {self.subType}"
+        self.__formattedFields['type'] = f"{self.rarity+" " if self.rarity!="Common" else (self.superType+" " if self.superType!="" else "")}{self.type} - {self.subType}"
         self.__formattedFields['super_type'] = f"{self.superType}"
         self.__formattedFields['casting_cost'] = f"{self.castingCost}"
         self.__formattedFields['pt'] = f"{self.power}/{self.toughness}"
