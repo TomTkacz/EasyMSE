@@ -12,43 +12,55 @@ EasyMSE is a Python package for creating Magic: The Gathering cards from code or
 
 With Python and PIP installed, open a terminal and enter `pip install ezmse`
 
-You must have [Magic Set Editor 2](https://magicseteditor.boards.net/page/downloads) installed (or build it from [source](https://github.com/twanvl/MagicSetEditor2)). Your working directory must contain the .exe and .com versions of MSE as well as its data and resource folder. You must also have the [Magic - M15 fonts](https://github.com/MagicSetEditorPacks/Font-Pack) installed in order for the cards to render properly.
+You must have [MSE2](https://magicseteditor.boards.net/page/downloads) installed (or build it from [source](https://github.com/twanvl/MagicSetEditor2)). By default, MSE2 doesn't have the necessary features<sup>[[1]](https://github.com/haganbmj/MagicSetEditor2/pull/106)[[2]](https://github.com/haganbmj/MagicSetEditor2/pull/104)</sup> needed to use EasyMSE version >=v1.0.0. To enable this additional functionality, you must also download the EasyMSE build of MSE2 (see the following platform-specific sections).
+
+### Windows
+
+On x64 Windows, you can simply replace the MSE2 .exe and .com files with the [EasyMSE build binaries](https://github.com/TomTkacz/MagicSetEditor2/releases/tag/v2.5.6) of MSE2.
+
+### MacOS & Linux
+
+EasyMSE is currently <b>only supported on Windows</b>. The program specifically looks for .exe and .com extensions to the executables, which means a you'd need a modified environment for EasyMSE to work correctly. I hope to implement greater cross-platform support in the future.
+
+# Setup
+
+Your working directory must contain the .exe and .com versions of MSE as well as its data and resource folder. You must also have the [Magic - M15 fonts](https://github.com/MagicSetEditorPacks/Font-Pack) downloaded in order for the cards to render properly. You can either install the fonts system-wide or copy them to the `resource/fonts` folder in your working directory.
 
 # Usage
 
 ## Generating a Card
 
 ```python
-from ezmse import Card
+from ezmse import *
 
-myCard = Card()
-myCard.name = "Cheese, The Destroyer"
-myCard.color = "red,black"
-myCard.castingCost = "2RB"
-myCard.type = "Legendary Creature - Cat"
-myCard.rarity = "Rare"
-myCard.superType = "Legendary"
-myCard.power = 5
-myCard.toughness = 6
-myCard.illustrator = "Kev Walker"
-myCard.setCode = "XXX-XX"
-myCard.text = r"Indestructible\n<sym>T</sym>: Draw one BILLION cards"
-myCard.image = "cheese.jpg"
+card = Card(style="m15-altered")
 
-myCard.export("cheese-the-destroyer.png")
+card.name = "Cheese, the Destroyer"
+card.imagePath = "images/cheese.jpg"
+card.colors = ["red","blue"]
+card.castingCost = "2RU"
+
+card.rarity = "Legendary"
+card.type = "Creature"
+card.subType = "Cat"
+
+card.power = 12
+card.toughness = 12
+
+card.text = "[[T]]: Kill everyone and destroy the world."
+card.flavorText = "Meowwww!!!"
+
+card.setCode = "123"
+card.illustrator = "Kev Walker"
+
+card.export("test.png")
 ```
 
 <div align="center">
-    <img src="https://i.imgur.com/hEl6eJx.png">
+    <img src="https://i.imgur.com/7E33gXl.png">
 </div>
+<br>
 
 # Developing EasyMSE
 
 Clone the repository, navigate to the root folder, and enter `pip install -e .[dev]`
-
-Features that need added:
-
-* A more genericized Card class that can generate other types of cards (Planeswalker, Saga, etc.)
-* Flavor text
-* More unit tests! (I'm fairly new to them)
-* A way to make pyfakefs a development-only dependency (only including it in the dev section of setup.py makes the unit tests error out upon deployment)
